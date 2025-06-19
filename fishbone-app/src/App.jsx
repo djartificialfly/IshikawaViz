@@ -4,9 +4,7 @@ import { TransformWrapper, TransformComponent, MiniMap } from 'react-zoom-pan-pi
 import data from './data/example.json'
 import './App.css'
 
-function generateSpec(d, collapsed = {}) {
-  const width = 800
-  const height = 400
+function generateSpec(d, collapsed = {}, width, height) {
   const midY = height / 2
   const catSpacing = (width - 200) / d.kategorien.length
   const lines = []
@@ -101,35 +99,54 @@ function App() {
   const viewRef = useRef(null)
   const [collapsed, setCollapsed] = useState({})
   const [info, setInfo] = useState(null)
+  const [dimensions, setDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  })
 
   useEffect(() => {
-    const spec = generateSpec(data, collapsed)
+    const resizeHandler = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight })
+    }
+    window.addEventListener('resize', resizeHandler)
+    return () => window.removeEventListener('resize', resizeHandler)
+  }, [])
+
+  useEffect(() => {
+    const spec = generateSpec(data, collapsed, dimensions.width, dimensions.height)
     if (ref.current) ref.current.innerHTML = ''
     let view
-    let handler
+    let clickHandler
+    let hoverHandler
     vegaEmbed(ref.current, spec, { actions: false }).then(res => {
       view = res.view
       viewRef.current = view
-      handler = (event, item) => {
-        if (item && item.datum) {
-          if (item.datum.type === 'category') {
-            setCollapsed(c => ({ ...c, [item.datum.text]: !c[item.datum.text] }))
-          }
-          setInfo({ datum: item.datum, x: event.clientX, y: event.clientY })
+      clickHandler = (event, item) => {
+        if (item && item.datum && item.datum.type === 'category') {
+          setCollapsed(c => ({ ...c, [item.datum.text]: !c[item.datum.text] }))
         }
       }
-      view.addEventListener('click', handler)
+      hoverHandler = (event, item) => {
+        if (item && item.datum) {
+          setInfo({ datum: item.datum, x: event.clientX, y: event.clientY })
+        } else {
+          setInfo(null)
+        }
+      }
+      view.addEventListener('click', clickHandler)
+      view.addEventListener('mousemove', hoverHandler)
+      view.addEventListener('mouseout', () => setInfo(null))
     })
     return () => {
       if (view) {
-        view.removeEventListener('click', handler)
+        view.removeEventListener('click', clickHandler)
+        view.removeEventListener('mousemove', hoverHandler)
       }
     }
-  }, [collapsed])
+  }, [collapsed, dimensions])
 
   return (
     <div className="diagram-container">
-      <h1>Fishbone Diagram</h1>
       <TransformWrapper>
         <MiniMap />
         <TransformComponent>
