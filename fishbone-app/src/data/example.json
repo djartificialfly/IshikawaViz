@@ -1,0 +1,45 @@
+{
+  "fehler": "Produktausfall",
+  "kategorien": [
+    {
+      "name": "Mensch",
+      "ursachen": [
+        {"name": "Fehlbedienung", "status": "offen", "punkte": 3, "prioritaet": "hoch"},
+        {"name": "Unzureichende Schulung", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+      ]
+    },
+    {
+      "name": "Maschine",
+      "ursachen": [
+        {"name": "Defekte Teile", "status": "offen", "punkte": 4, "prioritaet": "hoch"},
+        {"name": "Mangelnde Wartung", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+      ]
+    },
+    {
+      "name": "Methode",
+      "ursachen": [
+        {"name": "Falsches Verfahren", "status": "offen", "punkte": 3, "prioritaet": "mittel"},
+        {"name": "Fehlende Standards", "status": "offen", "punkte": 2, "prioritaet": "niedrig"}
+      ]
+    },
+    {
+      "name": "Material",
+      "ursachen": [
+        {"name": "Schlechtes Material", "status": "offen", "punkte": 5, "prioritaet": "hoch"},
+        {"name": "Falscher Lieferant", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+      ]
+    },
+    {
+      "name": "Mitwelt",
+      "ursachen": [
+        {"name": "Umgebungstemperatur", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+      ]
+    },
+    {
+      "name": "Messung",
+      "ursachen": [
+        {"name": "Fehlerhafte Sensoren", "status": "offen", "punkte": 3, "prioritaet": "hoch"}
+      ]
+    }
+  ]
+}
