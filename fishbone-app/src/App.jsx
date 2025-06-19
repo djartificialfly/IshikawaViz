@@ -99,6 +99,9 @@ function App() {
   const viewRef = useRef(null)
   const [collapsed, setCollapsed] = useState({})
   const [info, setInfo] = useState(null)
+  const infoRef = useRef(null)
+  const [hoveringInfo, setHoveringInfo] = useState(false)
+  const [infoSize, setInfoSize] = useState({ width: 0, height: 0 })
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -113,11 +116,19 @@ function App() {
   }, [])
 
   useEffect(() => {
+    if (infoRef.current) {
+      const { offsetWidth, offsetHeight } = infoRef.current
+      setInfoSize({ width: offsetWidth, height: offsetHeight })
+    }
+  }, [info])
+
+  useEffect(() => {
     const spec = generateSpec(data, collapsed, dimensions.width, dimensions.height)
     if (ref.current) ref.current.innerHTML = ''
     let view
     let clickHandler
     let hoverHandler
+    let mouseOutHandler
     vegaEmbed(ref.current, spec, { actions: false }).then(res => {
       view = res.view
       viewRef.current = view
@@ -135,15 +146,19 @@ function App() {
       }
       view.addEventListener('click', clickHandler)
       view.addEventListener('mousemove', hoverHandler)
-      view.addEventListener('mouseout', () => setInfo(null))
+      mouseOutHandler = () => {
+        if (!hoveringInfo) setInfo(null)
+      }
+      view.addEventListener('mouseout', mouseOutHandler)
     })
     return () => {
       if (view) {
         view.removeEventListener('click', clickHandler)
         view.removeEventListener('mousemove', hoverHandler)
+        view.removeEventListener('mouseout', mouseOutHandler)
       }
     }
-  }, [collapsed, dimensions])
+  }, [collapsed, dimensions, hoveringInfo])
 
   return (
     <div className="diagram-container">
@@ -154,7 +169,16 @@ function App() {
         </TransformComponent>
       </TransformWrapper>
       {info && (
-        <div className="info-box" style={{ left: info.x, top: info.y }}>
+        <div
+          className="info-box"
+          ref={infoRef}
+          onMouseEnter={() => setHoveringInfo(true)}
+          onMouseLeave={() => setHoveringInfo(false)}
+          style={{
+            left: Math.min(info.x, dimensions.width - infoSize.width - 10),
+            top: Math.min(info.y, dimensions.height - infoSize.height - 10)
+          }}
+        >
           <strong>{info.datum.text}</strong>
           {info.datum.raw?.status && <div>Status: {info.datum.raw.status}</div>}
           {info.datum.raw?.punkte && <div>Punkte: {info.datum.raw.punkte}</div>}
