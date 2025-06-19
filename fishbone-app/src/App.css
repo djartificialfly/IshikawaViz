@@ -4,3 +4,16 @@
   padding: 2rem;
   font-family: sans-serif;
 }
+
+.diagram-container {
+  position: relative;
+}
+
+.info-box {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  z-index: 10;
+}

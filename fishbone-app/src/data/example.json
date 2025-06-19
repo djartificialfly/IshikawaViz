@@ -1,44 +1,51 @@
 {
   "fehler": "Produktausfall",
+  "link": "https://beispiel.de/Produktausfall",
   "kategorien": [
     {
       "name": "Mensch",
+      "link": "https://beispiel.de/Mensch",
       "ursachen": [
-        {"name": "Fehlbedienung", "status": "offen", "punkte": 3, "prioritaet": "hoch"},
-        {"name": "Unzureichende Schulung", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+        {"name": "Fehlbedienung", "status": "offen", "punkte": 3, "prioritaet": "hoch", "link": "https://beispiel.de/Fehlbedienung"},
+        {"name": "Unzureichende Schulung", "status": "offen", "punkte": 2, "prioritaet": "mittel", "link": "https://beispiel.de/UnzureichendeSchulung"}
       ]
     },
     {
       "name": "Maschine",
+      "link": "https://beispiel.de/Maschine",
       "ursachen": [
-        {"name": "Defekte Teile", "status": "offen", "punkte": 4, "prioritaet": "hoch"},
-        {"name": "Mangelnde Wartung", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+        {"name": "Defekte Teile", "status": "offen", "punkte": 4, "prioritaet": "hoch", "link": "https://beispiel.de/DefekteTeile"},
+        {"name": "Mangelnde Wartung", "status": "offen", "punkte": 2, "prioritaet": "mittel", "link": "https://beispiel.de/MangelndeWartung"}
       ]
     },
     {
       "name": "Methode",
+      "link": "https://beispiel.de/Methode",
       "ursachen": [
-        {"name": "Falsches Verfahren", "status": "offen", "punkte": 3, "prioritaet": "mittel"},
-        {"name": "Fehlende Standards", "status": "offen", "punkte": 2, "prioritaet": "niedrig"}
+        {"name": "Falsches Verfahren", "status": "offen", "punkte": 3, "prioritaet": "mittel", "link": "https://beispiel.de/FalschesVerfahren"},
+        {"name": "Fehlende Standards", "status": "offen", "punkte": 2, "prioritaet": "niedrig", "link": "https://beispiel.de/FehlendeStandards"}
       ]
     },
     {
       "name": "Material",
+      "link": "https://beispiel.de/Material",
       "ursachen": [
-        {"name": "Schlechtes Material", "status": "offen", "punkte": 5, "prioritaet": "hoch"},
-        {"name": "Falscher Lieferant", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+        {"name": "Schlechtes Material", "status": "offen", "punkte": 5, "prioritaet": "hoch", "link": "https://beispiel.de/SchlechtesMaterial"},
+        {"name": "Falscher Lieferant", "status": "offen", "punkte": 2, "prioritaet": "mittel", "link": "https://beispiel.de/FalscherLieferant"}
       ]
     },
     {
       "name": "Mitwelt",
+      "link": "https://beispiel.de/Mitwelt",
       "ursachen": [
-        {"name": "Umgebungstemperatur", "status": "offen", "punkte": 2, "prioritaet": "mittel"}
+        {"name": "Umgebungstemperatur", "status": "offen", "punkte": 2, "prioritaet": "mittel", "link": "https://beispiel.de/Umgebungstemperatur"}
       ]
     },
     {
       "name": "Messung",
+      "link": "https://beispiel.de/Messung",
       "ursachen": [
-        {"name": "Fehlerhafte Sensoren", "status": "offen", "punkte": 3, "prioritaet": "hoch"}
+        {"name": "Fehlerhafte Sensoren", "status": "offen", "punkte": 3, "prioritaet": "hoch", "link": "https://beispiel.de/FehlerhafteSensoren"}
       ]
     }
   ]
