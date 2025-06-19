@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import vegaEmbed from 'vega-embed'
-import { TransformWrapper, TransformComponent, MiniMap } from 'react-zoom-pan-pinch'
+import { TransformWrapper, TransformComponent, MiniMap, useControls } from 'react-zoom-pan-pinch'
 import data from './data/example.json'
 import './App.css'
 
@@ -18,7 +18,7 @@ function generateSpec(d, collapsed = {}, width, height) {
   d.kategorien.forEach((cat, i) => {
     const baseX = 50 + (i + 1) * catSpacing
     const orientation = i % 2 === 0 ? -1 : 1
-    const x1 = baseX - 30
+    const x1 = baseX - 50
     const y1 = midY
     const x2 = baseX
     const y2 = midY + orientation * 60
@@ -94,6 +94,37 @@ function generateSpec(d, collapsed = {}, width, height) {
   }
 }
 
+function ClickableMiniMap(props) {
+  const { setTransform, instance } = useControls()
+
+  const handleClick = e => {
+    if (!instance.wrapperComponent || !instance.contentComponent) return
+
+    const rect = e.currentTarget.getBoundingClientRect()
+    const mx = e.clientX - rect.left
+    const my = e.clientY - rect.top
+
+    const contentRect = instance.contentComponent.getBoundingClientRect()
+    const contentWidth = contentRect.width / instance.transformState.scale
+    const contentHeight = contentRect.height / instance.transformState.scale
+    const scaleX = (props.width || 200) / contentWidth
+    const scaleY = (props.height || 200) / contentHeight
+    const miniScale = scaleY > scaleX ? scaleX : scaleY
+
+    const contentX = mx / miniScale
+    const contentY = my / miniScale
+
+    const wrapperWidth = instance.wrapperComponent.offsetWidth
+    const wrapperHeight = instance.wrapperComponent.offsetHeight
+    const newX = wrapperWidth / 2 - contentX * instance.transformState.scale
+    const newY = wrapperHeight / 2 - contentY * instance.transformState.scale
+
+    setTransform(newX, newY, instance.transformState.scale, 200, 'easeOut')
+  }
+
+  return <MiniMap {...props} onClick={handleClick} />
+}
+
 function App() {
   const ref = useRef(null)
   const viewRef = useRef(null)
@@ -162,8 +193,8 @@ function App() {
 
   return (
     <div className="diagram-container">
-      <TransformWrapper>
-        <MiniMap />
+      <TransformWrapper limitToBounds={false}>
+        <ClickableMiniMap />
         <TransformComponent>
           <div ref={ref}></div>
         </TransformComponent>
