@@ -34,7 +34,7 @@ function generateSpec(d, collapsed = {}, width, height) {
     const x1 = baseX - 50
     const y1 = midY
     const x2 = baseX
-    const y2 = midY + orientation * 60
+    const y2 = midY + orientation * 80
     lines.push({ x1, y1, x2, y2, category: cat.name })
     labels.push({ x: x2 + 5, y: y2, text: cat.name, category: cat.name, align: 'left', type: 'category', link: cat.link, raw: cat })
     if (!collapsed[cat.name]) {
@@ -227,11 +227,9 @@ function App() {
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="temporary"
+        variant="persistent"
         anchor="left"
         open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        ModalProps={{ keepMounted: true }}
         sx={{
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
@@ -295,7 +293,6 @@ function App() {
                 </a>
               </div>
             )}
-            <button onClick={() => setInfo(null)}>Schließen</button>
           </div>
         )}
       </Box>
