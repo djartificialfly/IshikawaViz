@@ -15,7 +15,11 @@
     "vega": "^6.1.2",
     "vega-embed": "^7.0.2",
     "vega-lite": "^6.1.0",
-    "react-zoom-pan-pinch": "^3.7.0"
+    "react-zoom-pan-pinch": "^3.7.0",
+    "@mui/material": "^5.15.16",
+    "@mui/icons-material": "^5.14.21",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
