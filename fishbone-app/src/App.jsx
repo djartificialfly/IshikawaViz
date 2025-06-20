@@ -141,12 +141,13 @@ function ClickableMiniMap(props) {
 function App() {
   const ref = useRef(null)
   const viewRef = useRef(null)
+  const containerRef = useRef(null)
   const [collapsed, setCollapsed] = useState({})
   const [info, setInfo] = useState(null)
   const infoRef = useRef(null)
   const [hoveringInfo, setHoveringInfo] = useState(false)
   const [infoSize, setInfoSize] = useState({ width: 0, height: 0 })
-  const [drawerOpen, setDrawerOpen] = useState(true)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [showMiniMap, setShowMiniMap] = useState(true)
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
@@ -156,16 +157,15 @@ function App() {
   useEffect(() => {
     const resizeHandler = () => {
       const header = 64
-      const drawerWidth = drawerOpen ? 240 : 60
       setDimensions({
-        width: window.innerWidth - drawerWidth,
+        width: window.innerWidth,
         height: window.innerHeight - header,
       })
     }
     resizeHandler()
     window.addEventListener('resize', resizeHandler)
     return () => window.removeEventListener('resize', resizeHandler)
-  }, [drawerOpen])
+  }, [])
 
   useEffect(() => {
     if (infoRef.current) {
@@ -212,14 +212,11 @@ function App() {
     }
   }, [collapsed, dimensions, hoveringInfo])
 
-  const drawerWidth = drawerOpen ? 240 : 60
+  const drawerWidth = 240
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar
-        position="fixed"
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
-      >
+      <AppBar position="fixed">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <IconButton color="inherit" onClick={() => setDrawerOpen(!drawerOpen)}>
             <MenuIcon />
@@ -230,14 +227,19 @@ function App() {
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="permanent"
+        variant="temporary"
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        ModalProps={{ keepMounted: true }}
         sx={{
-          width: drawerWidth,
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
             boxSizing: 'border-box',
             overflowX: 'hidden',
+            position: 'fixed',
+            top: '64px',
           },
         }}
       >
@@ -254,6 +256,7 @@ function App() {
       <Box
         component="main"
         className="diagram-container"
+        ref={containerRef}
         sx={{ flexGrow: 1, mt: '64px', position: 'relative', height: `calc(100vh - 64px)` }}
       >
         <TransformWrapper limitToBounds={false}>
@@ -269,8 +272,14 @@ function App() {
             onMouseEnter={() => setHoveringInfo(true)}
             onMouseLeave={() => setHoveringInfo(false)}
             style={{
-              left: Math.min(info.x, dimensions.width - infoSize.width - 10),
-              top: Math.min(info.y, dimensions.height - infoSize.height - 10),
+              left: Math.min(
+                info.x - (containerRef.current?.getBoundingClientRect().left || 0),
+                dimensions.width - infoSize.width - 10
+              ),
+              top: Math.min(
+                info.y - (containerRef.current?.getBoundingClientRect().top || 0),
+                dimensions.height - infoSize.height - 10
+              ),
             }}
           >
             <strong>{info.datum.text}</strong>
