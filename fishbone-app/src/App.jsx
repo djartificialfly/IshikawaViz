@@ -17,7 +17,7 @@ import MapIcon from '@mui/icons-material/Map'
 import data from './data/example.json'
 import './App.css'
 
-function generateSpec(d, collapsed = {}, width, height) {
+function generateSpec(d, width, height) {
   const midY = height / 2
   const catSpacing = (width - 200) / d.categories.length
   const lines = []
@@ -38,8 +38,7 @@ function generateSpec(d, collapsed = {}, width, height) {
     const y2 = midY + orientation * 80
     lines.push({ x1, y1, x2, y2, category: cat.name })
     labels.push({ x: x2 + 5, y: y2, text: cat.name, category: cat.name, align: 'left', type: 'category', link: cat.link, raw: cat })
-    if (!collapsed[cat.name]) {
-      cat.causes.forEach((cause, j) => {
+    cat.causes.forEach((cause, j) => {
         const cx2 = x2
         const cy2 = y2 + orientation * (j + 1) * 20
         const cx1 = cx2 - 30
@@ -47,10 +46,9 @@ function generateSpec(d, collapsed = {}, width, height) {
         lines.push({ x1: cx1, y1: cy1, x2: cx2, y2: cy2, category: cat.name })
         labels.push({ x: cx1 - 5, y: cy1, text: cause.name, category: cat.name, align: 'right', type: 'cause', link: cause.link, raw: cause, points: cause.points })
         if (cause.points !== undefined) {
-          badges.push({ x: cx1 - 15, y: cy1, points: cause.points, category: cat.name })
+          badges.push({ x: cx1 + 5, y: cy1 - 10, points: cause.points, category: cat.name })
         }
-      })
-    }
+    })
   })
 
   return {
@@ -174,7 +172,6 @@ function App() {
   const ref = useRef(null)
   const viewRef = useRef(null)
   const containerRef = useRef(null)
-  const [collapsed, setCollapsed] = useState({})
   const [info, setInfo] = useState(null)
   const infoRef = useRef(null)
   const [hoveringInfo, setHoveringInfo] = useState(false)
@@ -208,7 +205,7 @@ function App() {
   }, [info])
 
   useEffect(() => {
-    const spec = generateSpec(data, collapsed, dimensions.width, dimensions.height)
+    const spec = generateSpec(data, dimensions.width, dimensions.height)
     if (ref.current) ref.current.innerHTML = ''
     let view
     let clickHandler
@@ -230,6 +227,7 @@ function App() {
         }
       }
       view.addEventListener('click', clickHandler)
+      view.addEventListener('mousedown', clickHandler)
       view.addEventListener('mousemove', hoverHandler)
       mouseOutHandler = () => {
         if (!hoveringInfo) setInfo(null)
@@ -239,11 +237,12 @@ function App() {
     return () => {
       if (view) {
         view.removeEventListener('click', clickHandler)
+        view.removeEventListener('mousedown', clickHandler)
         view.removeEventListener('mousemove', hoverHandler)
         view.removeEventListener('mouseout', mouseOutHandler)
       }
     }
-  }, [collapsed, dimensions, hoveringInfo])
+  }, [dimensions, hoveringInfo])
 
   const drawerWidth = 240
 
