@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import vegaEmbed from 'vega-embed'
 import { TransformWrapper, TransformComponent, MiniMap, useControls } from 'react-zoom-pan-pinch'
+import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import InboxIcon from '@mui/icons-material/MoveToInbox'
+import MailIcon from '@mui/icons-material/Mail'
+import MenuIcon from '@mui/icons-material/Menu'
+import MapIcon from '@mui/icons-material/Map'
 import data from './data/example.json'
 import './App.css'
 
@@ -133,6 +146,8 @@ function App() {
   const infoRef = useRef(null)
   const [hoveringInfo, setHoveringInfo] = useState(false)
   const [infoSize, setInfoSize] = useState({ width: 0, height: 0 })
+  const [drawerOpen, setDrawerOpen] = useState(true)
+  const [showMiniMap, setShowMiniMap] = useState(true)
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -140,11 +155,17 @@ function App() {
 
   useEffect(() => {
     const resizeHandler = () => {
-      setDimensions({ width: window.innerWidth, height: window.innerHeight })
+      const header = 64
+      const drawerWidth = drawerOpen ? 240 : 60
+      setDimensions({
+        width: window.innerWidth - drawerWidth,
+        height: window.innerHeight - header,
+      })
     }
+    resizeHandler()
     window.addEventListener('resize', resizeHandler)
     return () => window.removeEventListener('resize', resizeHandler)
-  }, [])
+  }, [drawerOpen])
 
   useEffect(() => {
     if (infoRef.current) {
@@ -191,40 +212,85 @@ function App() {
     }
   }, [collapsed, dimensions, hoveringInfo])
 
+  const drawerWidth = drawerOpen ? 240 : 60
+
   return (
-    <div className="diagram-container">
-      <TransformWrapper limitToBounds={false}>
-        <ClickableMiniMap />
-        <TransformComponent>
-          <div ref={ref}></div>
-        </TransformComponent>
-      </TransformWrapper>
-      {info && (
-        <div
-          className="info-box"
-          ref={infoRef}
-          onMouseEnter={() => setHoveringInfo(true)}
-          onMouseLeave={() => setHoveringInfo(false)}
-          style={{
-            left: Math.min(info.x, dimensions.width - infoSize.width - 10),
-            top: Math.min(info.y, dimensions.height - infoSize.height - 10)
-          }}
-        >
-          <strong>{info.datum.text}</strong>
-          {info.datum.raw?.status && <div>Status: {info.datum.raw.status}</div>}
-          {info.datum.raw?.punkte && <div>Punkte: {info.datum.raw.punkte}</div>}
-          {info.datum.raw?.prioritaet && <div>Priorität: {info.datum.raw.prioritaet}</div>}
-          {info.datum.link && (
-            <div>
-              <a href={info.datum.link} target="_blank" rel="noreferrer">
-                Link
-              </a>
-            </div>
-          )}
-          <button onClick={() => setInfo(null)}>Schließen</button>
-        </div>
-      )}
-    </div>
+    <Box sx={{ display: 'flex' }}>
+      <AppBar
+        position="fixed"
+        sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
+      >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <IconButton color="inherit" onClick={() => setDrawerOpen(!drawerOpen)}>
+            <MenuIcon />
+          </IconButton>
+          <IconButton color="inherit" onClick={() => setShowMiniMap(!showMiniMap)}>
+            <MapIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            overflowX: 'hidden',
+          },
+        }}
+      >
+        <Toolbar />
+        <List>
+          {['Item 1', 'Item 2', 'Item 3'].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemText primary={text} sx={{ opacity: drawerOpen ? 1 : 0 }} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <Box
+        component="main"
+        className="diagram-container"
+        sx={{ flexGrow: 1, mt: '64px', position: 'relative', height: `calc(100vh - 64px)` }}
+      >
+        <TransformWrapper limitToBounds={false}>
+          {showMiniMap && <ClickableMiniMap />}
+          <TransformComponent>
+            <div ref={ref}></div>
+          </TransformComponent>
+        </TransformWrapper>
+        {info && (
+          <div
+            className="info-box"
+            ref={infoRef}
+            onMouseEnter={() => setHoveringInfo(true)}
+            onMouseLeave={() => setHoveringInfo(false)}
+            style={{
+              left: Math.min(info.x, dimensions.width - infoSize.width - 10),
+              top: Math.min(info.y, dimensions.height - infoSize.height - 10),
+            }}
+          >
+            <strong>{info.datum.text}</strong>
+            {info.datum.raw?.status && <div>Status: {info.datum.raw.status}</div>}
+            {info.datum.raw?.punkte && <div>Punkte: {info.datum.raw.punkte}</div>}
+            {info.datum.raw?.prioritaet && (
+              <div>Priorität: {info.datum.raw.prioritaet}</div>
+            )}
+            {info.datum.link && (
+              <div>
+                <a href={info.datum.link} target="_blank" rel="noreferrer">
+                  Link
+                </a>
+              </div>
+            )}
+            <button onClick={() => setInfo(null)}>Schließen</button>
+          </div>
+        )}
+      </Box>
+    </Box>
   )
 }
 
